@@ -39,6 +39,7 @@ public class Transdutor {
 		RESERVADO.put("void", true);
 		RESERVADO.put("main", true);
 		RESERVADO.put("String", true);
+		RESERVADO.put("new", true);
 		RESERVADO.put("int", true);
 		RESERVADO.put("boolean", true);
 		RESERVADO.put("true", true);
@@ -69,73 +70,106 @@ public class Transdutor {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.showOpenDialog(null);
 		File file = fileChooser.getSelectedFile();
+		
+		lerGramatica(file);
+		imprimirResultados();
+		
+	}
+
+	private static void lerGramatica(File file) {
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(file));
 			String entrada = "";
-			while((entrada = br.readLine()) != null){
-				
+			BufferedReader br = null;
+			if(file != null){
+				br = new BufferedReader(new FileReader(file));
+			}else{
+				entrada = "if( a < 1) { a=2);";
 			}
-			int posEntrada = 0;
-			String buffer = "";
-			int estado = 1;
-			boolean done = false;
-			char lindo = 'o';
-			while(!done){
-				if(posEntrada < entrada.length()){
-					lindo = entrada.charAt(posEntrada);
-				}else{
-					done = true;
-					estado = -1;
-				}
-				switch(estado){
-				case 1:
-						if(OPERADOR.containsKey(String.valueOf(lindo))){
-							resultado.add(new Registro(String.valueOf(lindo), "Operador"));
-							posEntrada++;
-						}else if(Character.isLetter(lindo)){
-							estado = 2;
-						}else if(Character.isDigit(lindo)){
-							estado = 3;
-						} else if(Character.isWhitespace(lindo)){
+			while((entrada = br.readLine()) != null){
+				int posEntrada = 0;
+				String buffer = "";
+				int estado = 1;
+				boolean done = false;
+				char lindo = 'o';
+				while(!done){
+					if(posEntrada < entrada.length()){
+						lindo = entrada.charAt(posEntrada);
+					}else{
+						done = true;
+						estado = -1;
+					}
+					switch(estado){
+					case 1:
+							if(OPERADOR.containsKey(String.valueOf(lindo))){
+								resultado.add(new Registro(String.valueOf(lindo), "Operador"));
+								posEntrada++;
+							}else if(Character.isLetter(lindo)){
+								estado = 2;
+							}else if(Character.isDigit(lindo)){
+								estado = 3;
+							}else if(lindo == '"'){
+								estado = 4;
+								posEntrada++;
+							}else if(Character.isWhitespace(lindo)){
+								estado = 1;
+								posEntrada++;
+							}
+							break;
+					case 2:
+							while(Character.isLetter(lindo) || Character.isDigit(lindo) || lindo == '_'){
+								buffer = buffer.concat(String.valueOf(lindo));
+								posEntrada++;
+								lindo = entrada.charAt(posEntrada);
+							}
+							if(RESERVADO.containsKey(buffer)){
+								resultado.add(new Registro(buffer, "Palavra Reservada"));
+							} else if(buffer.matches(Identifier)){
+								resultado.add(new Registro(buffer, "Identificador"));
+							}else{
+								resultado.add(new Registro(buffer, "Não Identificado"));
+							}
+							buffer = "";
+							estado = 1;
+							break;
+					case 3:
+							while(Character.isDigit(lindo)){
+								buffer = buffer.concat(String.valueOf(lindo));
+								posEntrada++;
+								lindo = entrada.charAt(posEntrada);
+							}
+							if(buffer.matches(NumberLiteral)){
+								resultado.add(new Registro(buffer, "Número Literal"));
+							}
+							buffer = "";
+							estado = 1;
+							break;
+					case 4:
+							while(lindo != '"'){
+								buffer = buffer.concat(String.valueOf(lindo));
+								posEntrada++;
+								lindo = entrada.charAt(posEntrada);
+							}
+							
+							resultado.add(new Registro(buffer, "String Literal"));
+							buffer = "";
 							estado = 1;
 							posEntrada++;
-						}
-						break;
-				case 2:
-						while(Character.isLetter(lindo) || Character.isDigit(lindo) || lindo == '_'){
-							buffer = buffer.concat(String.valueOf(lindo));
-							posEntrada++;
-							lindo = entrada.charAt(posEntrada);
-						}
-						if(RESERVADO.containsKey(buffer)){
-							resultado.add(new Registro(buffer, "Palavra Reservada"));
-						} else if(buffer.matches(Identifier)){
-							resultado.add(new Registro(buffer, "Identificador"));
-						}else{
-							resultado.add(new Registro(buffer, "Não Identificado"));
-						}
-						buffer = "";
-						estado = 1;
-						break;
-				case 3:
-						while(Character.isDigit(lindo)){
-							buffer = buffer.concat(String.valueOf(lindo));
-							posEntrada++;
-							lindo = entrada.charAt(posEntrada);
-						}
-						if(buffer.matches(NumberLiteral)){
-							resultado.add(new Registro(buffer, "Número Literal"));
-						}
-						buffer = "";
-						estado = 1;
-						break;
-				default: break;
+							break;
+					default: break;
+					}
 				}
 			}
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private static void imprimirResultados() {
+		for (Registro reg : resultado) {
+			System.out.println(reg.valor+" - "+reg.type);
 		}
 	}
 }
