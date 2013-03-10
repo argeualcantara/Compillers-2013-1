@@ -132,19 +132,21 @@ public class Transdutor {
 							} else if(buffer.matches(Identifier)){
 								resultado.add(new Registro(buffer, "Identificador"));
 							}else{
-								resultado.add(new Registro(buffer, "Não Identificado"));
+								resultado.add(new Registro(buffer, "Nao pertence a gramatica"));
 							}
 							buffer = "";
 							estado = 1;
 							break;
 					case 3:
-							while(Character.isDigit(lido)){
+							while(Character.isLetter(lido) || Character.isDigit(lido) || lido == '_'){
 								buffer = buffer.concat(String.valueOf(lido));
 								posEntrada++;
 								lido = entrada.charAt(posEntrada);
 							}
 							if(buffer.matches(NumberLiteral)){
-								resultado.add(new Registro(buffer, "Número Literal"));
+								resultado.add(new Registro(buffer, "Numero Literal"));
+							}else{
+								resultado.add(new Registro(buffer, "Nao pertence a gramatica"));
 							}
 							buffer = "";
 							estado = 1;
@@ -164,10 +166,11 @@ public class Transdutor {
 					case 5:
 							if(entrada.charAt(posEntrada+1) == '/'){
 								while(posEntrada < entrada.length()){
+									lido = entrada.charAt(posEntrada);
 									buffer = buffer.concat(String.valueOf(lido));
 									posEntrada++;
-									lido = entrada.charAt(posEntrada);
 								}
+								resultado.add(new Registro(buffer, "Comentarios"));
 							}else if(entrada.charAt(posEntrada+1) == '*'){
 								boolean endOfComment = false;
 								while(!endOfComment){
@@ -178,7 +181,7 @@ public class Transdutor {
 											if(entrada.charAt(posEntrada+1) == '/'){
 												endOfComment = true;
 												buffer = buffer.concat(String.valueOf('/'));
-												resultado.add(new Registro(buffer, "Comments"));
+												resultado.add(new Registro(buffer, "Comentarios"));
 												estado = 0;
 												break;
 											}
