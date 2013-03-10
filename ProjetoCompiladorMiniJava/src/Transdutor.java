@@ -62,6 +62,9 @@ public class Transdutor {
 		OPERADOR.put("}", true);
 		OPERADOR.put("(", true);
 		OPERADOR.put(")", true);
+		OPERADOR.put("[", true);
+		OPERADOR.put("]", true);
+		OPERADOR.put(":", true);
 		OPERADOR.put(";", true);
 	}
 	
