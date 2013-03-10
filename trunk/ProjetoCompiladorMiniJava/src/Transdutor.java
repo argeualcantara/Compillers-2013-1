@@ -90,36 +90,42 @@ public class Transdutor {
 				String buffer = "";
 				int estado = 1;
 				boolean done = false;
-				char lindo = 'o';
+				char lido = 'o';
 				while(!done){
-					if(posEntrada < entrada.length()){
-						lindo = entrada.charAt(posEntrada);
+					if(entrada != null && posEntrada < entrada.length()){
+						lido = entrada.charAt(posEntrada);
 					}else{
 						done = true;
 						estado = -1;
 					}
 					switch(estado){
 					case 1:
-							if(OPERADOR.containsKey(String.valueOf(lindo))){
-								resultado.add(new Registro(String.valueOf(lindo), "Operador"));
+							if(lido == '/'){
+								if(entrada.charAt(posEntrada+1) == '/' || entrada.charAt(posEntrada+1) == '*'){
+									estado = 5;
+									break;
+								}
+							}else if(OPERADOR.containsKey(String.valueOf(lido))){
+								resultado.add(new Registro(String.valueOf(lido), "Operador"));
 								posEntrada++;
-							}else if(Character.isLetter(lindo)){
+							}else if(Character.isLetter(lido)){
 								estado = 2;
-							}else if(Character.isDigit(lindo)){
+							}else if(Character.isDigit(lido)){
 								estado = 3;
-							}else if(lindo == '"'){
+							}else if(lido == '"'){
 								estado = 4;
+								resultado.add(new Registro(String.valueOf(lido), "Operador"));
 								posEntrada++;
-							}else if(Character.isWhitespace(lindo)){
+							}else if(Character.isWhitespace(lido)){
 								estado = 1;
 								posEntrada++;
 							}
 							break;
 					case 2:
-							while(Character.isLetter(lindo) || Character.isDigit(lindo) || lindo == '_'){
-								buffer = buffer.concat(String.valueOf(lindo));
+							while(Character.isLetter(lido) || Character.isDigit(lido) || lido == '_'){
+								buffer = buffer.concat(String.valueOf(lido));
 								posEntrada++;
-								lindo = entrada.charAt(posEntrada);
+								lido = entrada.charAt(posEntrada);
 							}
 							if(RESERVADO.containsKey(buffer)){
 								resultado.add(new Registro(buffer, "Palavra Reservada"));
@@ -132,10 +138,10 @@ public class Transdutor {
 							estado = 1;
 							break;
 					case 3:
-							while(Character.isDigit(lindo)){
-								buffer = buffer.concat(String.valueOf(lindo));
+							while(Character.isDigit(lido)){
+								buffer = buffer.concat(String.valueOf(lido));
 								posEntrada++;
-								lindo = entrada.charAt(posEntrada);
+								lido = entrada.charAt(posEntrada);
 							}
 							if(buffer.matches(NumberLiteral)){
 								resultado.add(new Registro(buffer, "Número Literal"));
@@ -144,10 +150,10 @@ public class Transdutor {
 							estado = 1;
 							break;
 					case 4:
-							while(lindo != '"'){
-								buffer = buffer.concat(String.valueOf(lindo));
+							while(lido != '"'){
+								buffer = buffer.concat(String.valueOf(lido));
 								posEntrada++;
-								lindo = entrada.charAt(posEntrada);
+								lido = entrada.charAt(posEntrada);
 							}
 							
 							resultado.add(new Registro(buffer, "String Literal"));
@@ -155,6 +161,40 @@ public class Transdutor {
 							estado = 1;
 							posEntrada++;
 							break;
+					case 5:
+							if(entrada.charAt(posEntrada+1) == '/'){
+								while(posEntrada < entrada.length()){
+									buffer = buffer.concat(String.valueOf(lido));
+									posEntrada++;
+									lido = entrada.charAt(posEntrada);
+								}
+							}else if(entrada.charAt(posEntrada+1) == '*'){
+								boolean endOfComment = false;
+								while(!endOfComment){
+									while(posEntrada < entrada.length()){
+										lido = entrada.charAt(posEntrada);
+										buffer = buffer.concat(String.valueOf(lido));
+										if(lido == '*' && posEntrada < entrada.length()){
+											if(entrada.charAt(posEntrada+1) == '/'){
+												endOfComment = true;
+												buffer = buffer.concat(String.valueOf('/'));
+												resultado.add(new Registro(buffer, "Comments"));
+												estado = 0;
+												break;
+											}
+										}
+										posEntrada++;
+									}
+									entrada = br.readLine();
+									posEntrada = 0;
+									if(entrada == null){
+										endOfComment = true;
+										resultado.add(new Registro(buffer, "Não Identificado"));
+										estado = 0;
+										break;
+									}
+								}
+							}
 					default: break;
 					}
 				}
