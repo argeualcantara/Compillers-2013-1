@@ -15,8 +15,8 @@ public class Transdutor {
 	public static HashMap<String, Boolean> OPERADOR = new HashMap<String, Boolean>();
 	public static ArrayList<Registro> resultado = new ArrayList<Transdutor.Registro>();
 	
-	static String Identifier = "[A-Za-z][a-z[A-Z[0-9[_]]]]*";
-	static String NumberLiteral = "[0-9]*";
+	static String Identifier = "[A-Za-z]{1}(_*[0-9]*[A-Za-z]*)*";
+	static String NumberLiteral = "[0-9]+";
 	
 	static class Registro{
 		public Registro(String val, String tp){
@@ -79,6 +79,7 @@ public class Transdutor {
 		
 	}
 
+	@SuppressWarnings("resource")
 	private static void lerGramatica(File file) {
 		try {
 			String entrada = "";
@@ -86,7 +87,7 @@ public class Transdutor {
 			if(file != null){
 				br = new BufferedReader(new FileReader(file));
 			}else{
-				entrada = "if( a < 1) { a=2);";
+				throw new FileNotFoundException("Arquivo invalido.");
 			}
 			while((entrada = br.readLine()) != null){
 				int posEntrada = 0;
@@ -122,13 +123,18 @@ public class Transdutor {
 							}else if(Character.isWhitespace(lido)){
 								estado = 1;
 								posEntrada++;
+							}else{
+								resultado.add(new Registro(""+lido, "Nao pertence a gramatica"));
+								posEntrada++;
 							}
 							break;
 					case 2:
-							while(Character.isLetter(lido) || Character.isDigit(lido) || lido == '_'){
+							while((Character.isLetter(lido) || Character.isDigit(lido) || lido == '_')){
 								buffer = buffer.concat(String.valueOf(lido));
 								posEntrada++;
-								lido = entrada.charAt(posEntrada);
+								if(posEntrada < entrada.length()){
+									lido = entrada.charAt(posEntrada);
+								}
 							}
 							if(RESERVADO.containsKey(buffer)){
 								resultado.add(new Registro(buffer, "Palavra Reservada"));
