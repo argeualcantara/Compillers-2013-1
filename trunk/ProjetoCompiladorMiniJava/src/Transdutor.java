@@ -13,19 +13,12 @@ import javax.swing.JFileChooser;
 public class Transdutor {
 	public static HashMap<String, Boolean> RESERVADO = new HashMap<String, Boolean>();
 	public static HashMap<String, Boolean> OPERADOR = new HashMap<String, Boolean>();
-	public static ArrayList<Registro> resultado = new ArrayList<Transdutor.Registro>();
+	public static ArrayList<Registro> resultado = new ArrayList<Registro>();
 	
 	static String Identifier = "[A-Za-z]{1}(_*[0-9]*[A-Za-z]*)*";
 	static String NumberLiteral = "[0-9]+";
 	
-	static class Registro{
-		public Registro(String val, String tp){
-			this.valor = val;
-			this.type = tp;
-		}
-		String valor;
-		String type;
-	}
+	
 	
 	public static void Initialize(){
 		// PALAVRAS RESERVADAS
@@ -44,6 +37,8 @@ public class Transdutor {
 		RESERVADO.put("boolean", true);
 		RESERVADO.put("true", true);
 		RESERVADO.put("false", true);
+		RESERVADO.put("System.out.println", true);
+		
 		
 		//OPERADOR
 		OPERADOR.put("!", true);
@@ -68,19 +63,23 @@ public class Transdutor {
 		OPERADOR.put(";", true);
 	}
 	
-	public static void main(String[] args) {
+//	public static void main(String[] args) {
+//		Initialize();
+//		JFileChooser fileChooser = new JFileChooser();
+//		fileChooser.showOpenDialog(null);
+//		File file = fileChooser.getSelectedFile();
+//		
+//		lerGramatica(file);
+//		imprimirResultados();
+//		
+//	}
+
+	@SuppressWarnings({ "resource" })
+	public static ArrayList<Registro> lerGramatica() {
 		Initialize();
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.showOpenDialog(null);
 		File file = fileChooser.getSelectedFile();
-		
-		lerGramatica(file);
-		imprimirResultados();
-		
-	}
-
-	@SuppressWarnings("resource")
-	private static void lerGramatica(File file) {
 		try {
 			String entrada = "";
 			BufferedReader br = null;
@@ -134,8 +133,23 @@ public class Transdutor {
 								posEntrada++;
 								if(posEntrada < entrada.length()){
 									lido = entrada.charAt(posEntrada);
+								}else{
+									lido = ' ';
 								}
 							}
+							
+							if(buffer.equalsIgnoreCase("System") && entrada.charAt(posEntrada) == '.'){
+								while((Character.isLetter(lido) || lido == '.')){
+									buffer = buffer.concat(String.valueOf(lido));
+									posEntrada++;
+									if(posEntrada < entrada.length()){
+										lido = entrada.charAt(posEntrada);
+									}else{
+										lido = ' ';
+									}
+								}
+							}
+							
 							if(RESERVADO.containsKey(buffer)){
 								resultado.add(new Registro(buffer, "Palavra Reservada"));
 							} else if(buffer.matches(Identifier)){
@@ -161,13 +175,24 @@ public class Transdutor {
 							estado = 1;
 							break;
 					case 4:
+							boolean notFinished = false;
 							while(lido != '"'){
-								buffer = buffer.concat(String.valueOf(lido));
+								if(lido != '"'){
+									buffer = buffer.concat(String.valueOf(lido));
+								}
 								posEntrada++;
-								lido = entrada.charAt(posEntrada);
+								if(posEntrada < entrada.length()){
+									lido = entrada.charAt(posEntrada);
+								}else{
+									lido = '"';
+									notFinished = true;
+								}
 							}
 							
 							resultado.add(new Registro(buffer, "String Literal"));
+							if(!notFinished){
+								resultado.add(new Registro(lido+"", "Operador"));
+							}
 							buffer = "";
 							estado = 1;
 							posEntrada++;
@@ -201,7 +226,7 @@ public class Transdutor {
 									posEntrada = 0;
 									if(entrada == null){
 										endOfComment = true;
-										resultado.add(new Registro(buffer, "Não Identificado"));
+										resultado.add(new Registro(buffer, "Nao pertence a gramatica"));
 										estado = 0;
 										break;
 									}
@@ -217,9 +242,10 @@ public class Transdutor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return resultado;
 	}
 
-	private static void imprimirResultados() {
+	public static void imprimirResultados() {
 		for (Registro reg : resultado) {
 			System.out.println(reg.valor+" - "+reg.type);
 		}
