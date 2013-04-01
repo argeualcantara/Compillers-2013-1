@@ -6,78 +6,76 @@ public class DescendenteRecursivo {
 	
 	public static void MainClass() throws Exception{
 		Registro reg = lista.remove(0);
-		if(reg.type.equals("Palavra Reservada")){
-			if(!reg.valor.equalsIgnoreCase("class")){
-				throw new Exception("reserved word CLASS expected");
-			}
+		if(!reg.valor.equalsIgnoreCase("class")){
+			throw new Exception("reserved word CLASS expected");
+		}
+		reg = lista.remove(0);
+		if(!reg.type.equalsIgnoreCase("Identificador")){
+			throw new Exception("CLASS name expected");
+		}
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase("{")){
+			throw new Exception("{ expected");
+		}
+		reg = lista.remove(0);
+		
+		if(reg.valor.equalsIgnoreCase("public")){
 			reg = lista.remove(0);
-			if(!reg.type.equalsIgnoreCase("Identificador")){
-				throw new Exception("CLASS name expected");
-			}
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase("{")){
-				throw new Exception("{ expected");
-			}
-			reg = lista.remove(0);
-			
-			if(reg.valor.equalsIgnoreCase("public")){
-				reg = lista.remove(0);
-				if(reg.valor.equalsIgnoreCase("static")){
-					reg = lista.remove(0);
-					if(!reg.valor.equalsIgnoreCase("void")){
-						throw new Exception("Main method definition invalid: [public] [static] void main (String [] )");
-					}
-				}
-			}else if(reg.valor.equalsIgnoreCase("static")){
+			if(reg.valor.equalsIgnoreCase("static")){
 				reg = lista.remove(0);
 				if(!reg.valor.equalsIgnoreCase("void")){
 					throw new Exception("Main method definition invalid: [public] [static] void main (String [] )");
 				}
-			}else if(!reg.valor.equalsIgnoreCase("void")){
+			}
+		}else if(reg.valor.equalsIgnoreCase("static")){
+			reg = lista.remove(0);
+			if(!reg.valor.equalsIgnoreCase("void")){
 				throw new Exception("Main method definition invalid: [public] [static] void main (String [] )");
 			}
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase("main")){
-				throw new Exception("Main method definition invalid: [public] [static] void main (String [] )");
-			}
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase("(")){
-				throw new Exception("( expected");
-			}
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase("string")){
-				throw new Exception("String type expected");
-			}
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase("[")){
-				throw new Exception("[ expected");
-			}
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase("]")){
-				throw new Exception("] expected");
-			}
-			reg = lista.remove(0);
-			if(!reg.type.equalsIgnoreCase("Identificador")){
-				throw new Exception("Parameter name expected");
-			}
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase(")")){
-				throw new Exception(") expected");
-			}
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase("{")){
-				throw new Exception("{ expected");
-			}
-			//Main Class definition
-			Statement();
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase("}")){
-				throw new Exception("} expected");
-			}
-			reg = lista.remove(0);
-			if(!reg.valor.equalsIgnoreCase("}")){
-				throw new Exception("} expected");
-			}
+		}else if(!reg.valor.equalsIgnoreCase("void")){
+			throw new Exception("Main method definition invalid: [public] [static] void main (String [] )");
+		}
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase("main")){
+			throw new Exception("Main method definition invalid: [public] [static] void main (String [] )");
+		}
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase("(")){
+			throw new Exception("( expected");
+		}
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase("string")){
+			throw new Exception("String type expected");
+		}
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase("[")){
+			throw new Exception("[ expected");
+		}
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase("]")){
+			throw new Exception("] expected");
+		}
+		reg = lista.remove(0);
+		if(!reg.type.equalsIgnoreCase("Identificador")){
+			throw new Exception("Parameter name expected");
+		}
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase(")")){
+			throw new Exception(") expected");
+		}
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase("{")){
+			throw new Exception("{ expected");
+		}
+		//Main Class definition
+		Statement();
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase("}")){
+			throw new Exception("} expected");
+		}
+		reg = lista.remove(0);
+		if(!reg.valor.equalsIgnoreCase("}")){
+			throw new Exception("} expected");
 		}
 	}
 	
@@ -257,7 +255,7 @@ public class DescendenteRecursivo {
 
 	public static void main(String[] args) {
 		lista = Transdutor.lerGramatica();
-		Transdutor.imprimirResultados();
+//		Transdutor.imprimirResultados();
 		try {
 			for (Registro reg : lista) {
 				if(reg.type.equalsIgnoreCase("Nao pertence a gramatica")){

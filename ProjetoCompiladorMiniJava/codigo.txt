@@ -1,5 +1,5 @@
 class Teste{
-void main (String [] aa){
+public static void main (String [] aa){
 	{
 		System.out.println("LLLL");
 		String come = "";
