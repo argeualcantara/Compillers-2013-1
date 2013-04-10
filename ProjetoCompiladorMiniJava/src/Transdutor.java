@@ -38,6 +38,7 @@ public class Transdutor {
 		RESERVADO.put("true", true);
 		RESERVADO.put("false", true);
 		RESERVADO.put("System.out.println", true);
+		RESERVADO.put("length", true);
 		
 		
 		//OPERADOR
@@ -77,7 +78,7 @@ public class Transdutor {
 	@SuppressWarnings({ "resource" })
 	public static ArrayList<Registro> lerGramatica() {
 		Initialize();
-		JFileChooser fileChooser = new JFileChooser();
+		JFileChooser fileChooser = new JFileChooser("C:\\Users\\Argeu\\Ferramentas\\Java\\Workspace\\ProjetoCompiladorMiniJava");
 		fileChooser.showOpenDialog(null);
 		File file = fileChooser.getSelectedFile();
 		try {

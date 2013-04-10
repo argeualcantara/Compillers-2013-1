@@ -1,8 +1,13 @@
 class Teste{
-public static void main (String [] aa){
-	{
-		System.out.println("LLLL");
-		String come = "";
+	public static void main (String [] aa){
+		{
+			if((come.length) > 10){
+				System.out.println("IF");
+				String come = "";
+			}
+			while((come.length) > 5){
+				System.out.println("WHILE");
+			}
+		}
 	}
-}
 }
