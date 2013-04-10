@@ -1,9 +1,10 @@
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class DescendenteRecursivo {
 	private static List<Registro> lista = null;
-	
+	private static List<String> OPERADORES_LOGICOS_MATEMATICOS = null;
 	public static void MainClass() throws Exception{
 		Registro reg = lista.remove(0);
 		if(!reg.valor.equalsIgnoreCase("class")){
@@ -81,11 +82,13 @@ public class DescendenteRecursivo {
 	
 	public static void Statement() throws Exception {
 		Registro reg = lista.remove(0);
-		if(reg.valor.equalsIgnoreCase("{")){
+		if(reg.type.equals("Comentarios")){
+			
+		}else if(reg.valor.equalsIgnoreCase("{")){
 			boolean statement = true;
 			while(statement){
 				Statement();
-				if(lista.get(1).valor.equals("}")){
+				if(lista.get(0).valor.equals("}")){
 					statement = false;
 				}
 			}
@@ -125,7 +128,7 @@ public class DescendenteRecursivo {
 		}else if(reg.valor.equalsIgnoreCase("System.out.println")){
 			reg = lista.remove(0);
 			if(reg.valor.equalsIgnoreCase("(")){
-				Expression();
+				Factor();
 				reg = lista.remove(0);
 				if(reg.valor.equalsIgnoreCase(")")){
 					reg = lista.remove(0);
@@ -141,18 +144,18 @@ public class DescendenteRecursivo {
 		}else if(reg.type.equalsIgnoreCase("Identificador")){
 			reg = lista.remove(0);
 			if(reg.valor.equals("=")){
-				Expression();
+				Factor();
 				reg = lista.remove(0);
 				if(!reg.valor.equals(";")){
 					throw new Exception("; expected");
 				}
 			}else if(reg.valor.equals("[")){
-				Expression();
+				Factor();
 				reg = lista.remove(0);
 				if(reg.valor.equals("]")){
 					reg = lista.remove(0);
 					if(reg.valor.equals("=")){
-						Expression();
+						Factor();
 						reg = lista.remove(0);
 						if(!reg.valor.equals(";")){
 							throw new Exception("; expected");
@@ -181,13 +184,17 @@ public class DescendenteRecursivo {
 		}
 		reg = lista.remove(0);
 		if(reg.valor.equals("=")){
-			Expression();
+			Factor();
 			reg = lista.remove(0);
 			if(!reg.valor.equals(";")){
 				throw new Exception("; expected");
 			}
+		}else if(reg.valor.equals(";")){
+			
 		}else if(!reg.valor.equals(";")){
 			throw new Exception("; expected");
+		}else{
+			throw new Exception("Sintaxe incorreta, Var Declaration expected");
 		}
 	}
 
@@ -196,34 +203,59 @@ public class DescendenteRecursivo {
 			reg = lista.get(0);
 			if(reg.valor.equals("[")){
 				reg = lista.remove(0);
-				reg = lista.get(0);
+				reg = lista.remove(0);
 				if(!reg.valor.equals("]")){
 					throw new Exception("] expected");
 				}
+			}else if(reg.type.equals("Identificador")){
+				
 			}
-		}
-		if(!reg.valor.equalsIgnoreCase("boolean") && !reg.valor.equalsIgnoreCase("String")){
+		}else if(reg.valor.equalsIgnoreCase("boolean") || reg.valor.equalsIgnoreCase("String")){
+			
+		}else if(!reg.valor.equalsIgnoreCase("boolean") && !reg.valor.equalsIgnoreCase("String")){
 			throw new Exception("variable type expected");
 		}
 	}
 
 	private static void Expression() throws Exception {
+		Factor();
+		Registro reg = lista.remove(0);
+		if(OPERADORES_LOGICOS_MATEMATICOS.contains(reg.valor)){
+			Factor();
+		}else if(reg.valor.equals("[")){
+			Factor();
+			reg = lista.remove(0);
+			if(!reg.valor.equals("]")){
+				throw new Exception("] expected");
+			}
+		}else if(reg.valor.equals(".")){
+			reg = lista.remove(0);
+			if(!reg.valor.equals("length")){
+				throw new Exception("reserved word length expected");
+			}
+		}
+		
+	}
+	
+	private static boolean Factor() throws Exception {
 		Registro reg = lista.remove(0);
 		if(reg.type.equalsIgnoreCase("Identificador")){
-			
+			return true;
 		}else if(reg.valor.equalsIgnoreCase("true")){
-			
+			return true;
 		}else if(reg.valor.equalsIgnoreCase("false")){
-			
+			return true;
 		}else if(reg.valor.equalsIgnoreCase("new")){
 			reg = lista.remove(0);
 			if(reg.valor.equals("int")){
 				reg = lista.remove(0);
 				if(reg.valor.equals("[")){
-					Expression();
+					Factor();
 					reg = lista.remove(0);
 					if(!reg.valor.equals("]")){
 						throw new Exception("] expected");
+					}else{
+						return true;
 					}
 				}else{
 					throw new Exception("[ expected");
@@ -232,29 +264,38 @@ public class DescendenteRecursivo {
 				throw new Exception("int type expected");
 			}
 		}else if(reg.valor.equals("!")){
-			Expression();
+			Factor();
+			return true;
 		}else if(reg.valor.equals("(")){
 			Expression();
 			reg = lista.remove(0);
 			if(!reg.valor.equals(")")){
 				throw new Exception(") expected");
+			}else{
+				return true;
 			}
 		}else if(reg.type.equalsIgnoreCase("Numero Literal")){
-			
+			return true;
 		}else if(reg.valor.equalsIgnoreCase('"'+"")){
 			reg = lista.remove(0);
 			if(reg.type.equalsIgnoreCase("String Literal")){
 				reg = lista.remove(0);
 				if(!reg.valor.equals('"'+"")){
 					throw new Exception('"'+" expected");
+				}else{
+					return true;
 				}
 			}
+		}else{
+			throw new Exception("Factor expected near "+reg.valor);
+			
 		}
-		
+		return false;
 	}
 
 	public static void main(String[] args) {
 		lista = Transdutor.lerGramatica();
+		initialize();
 //		Transdutor.imprimirResultados();
 		try {
 			for (Registro reg : lista) {
@@ -268,5 +309,16 @@ public class DescendenteRecursivo {
 			e.printStackTrace();
 			System.out.println("Sintaxe incorreta");
 		}
+	}
+
+	private static void initialize() {
+		OPERADORES_LOGICOS_MATEMATICOS = new ArrayList<String>();
+		OPERADORES_LOGICOS_MATEMATICOS.add("+");
+		OPERADORES_LOGICOS_MATEMATICOS.add("-");
+		OPERADORES_LOGICOS_MATEMATICOS.add("/");
+		OPERADORES_LOGICOS_MATEMATICOS.add("*");
+		OPERADORES_LOGICOS_MATEMATICOS.add("<");
+		OPERADORES_LOGICOS_MATEMATICOS.add(">");
+		OPERADORES_LOGICOS_MATEMATICOS.add("&");
 	}
 }
