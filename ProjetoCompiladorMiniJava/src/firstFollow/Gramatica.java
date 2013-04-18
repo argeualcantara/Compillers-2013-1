@@ -6,11 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Gramatica {
-	public HashMap<String,String> G = new HashMap<String, String>();
+	public LinkedHashMap<String, String> G = new LinkedHashMap<String, String>();
 	public HashMap<String,Boolean> TE = new HashMap<String, Boolean>();
-	public HashMap<String, NaoTerminal> NT = new HashMap<String, NaoTerminal>();
+	public LinkedHashMap<String, NaoTerminal> NT = new LinkedHashMap<String, NaoTerminal>();
 	
 	@SuppressWarnings("resource")
 	public Gramatica(){
