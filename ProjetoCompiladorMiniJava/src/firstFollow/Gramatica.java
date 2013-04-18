@@ -18,12 +18,21 @@ public class Gramatica {
 		BufferedReader br = null;
 		try {
 			
-			System.out.println(System.getProperties().get("os.name"));
+			String so = System.getProperties().get("os.name").toString();
+			String GrammarPath = "";
+			String TerminalPath = "";
+			if(so.toLowerCase().startsWith("win")){
+				GrammarPath = "C:\\Users\\730543255\\workspace\\ProjetoCompiladorMiniJava\\src\\firstFollow\\gramatica.txt";
+				TerminalPath = "C:\\Users\\730543255\\workspace\\ProjetoCompiladorMiniJava\\src\\firstFollow\\terminais.txt";
+			}else{
+				GrammarPath = "";
+				TerminalPath = "";
+			}
 			
 //			JOptionPane.showMessageDialog(null, "Escolha o arquivo que contem a gramatica");
 //			JFileChooser fileChooser = new JFileChooser("");
 //			fileChooser.showOpenDialog(null);
-			File file = new File("C:\\Users\\730543255\\workspace\\ProjetoCompiladorMiniJava\\src\\firstFollow\\gramatica.txt");
+			File file = new File(GrammarPath);
 			
 			br = new BufferedReader(new FileReader(file));
 			String read = "";
@@ -37,7 +46,7 @@ public class Gramatica {
 //			fileChooser = new JFileChooser("");
 //			fileChooser.showOpenDialog(null);
 //			file = fileChooser.getSelectedFile();
-			file = new File("C:\\Users\\730543255\\workspace\\ProjetoCompiladorMiniJava\\src\\firstFollow\\terminais.txt");
+			file = new File(TerminalPath);
 			br = new BufferedReader(new FileReader(file));
 			read = "";
 			while((read = br.readLine()) != null){
