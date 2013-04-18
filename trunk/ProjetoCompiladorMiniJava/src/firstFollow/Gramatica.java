@@ -25,8 +25,8 @@ public class Gramatica {
 				GrammarPath = "C:\\Users\\730543255\\workspace\\ProjetoCompiladorMiniJava\\src\\firstFollow\\gramatica.txt";
 				TerminalPath = "C:\\Users\\730543255\\workspace\\ProjetoCompiladorMiniJava\\src\\firstFollow\\terminais.txt";
 			}else{
-				GrammarPath = "";
-				TerminalPath = "";
+				GrammarPath = "/home/argeu/Tools/Java/workspace/ProjetoCompiladorMiniJava/src/firstFollow/gramatica.txt";
+				TerminalPath = "/home/argeu/Tools/Java/workspace/ProjetoCompiladorMiniJava/src/firstFollow/terminais.txt";
 			}
 			
 //			JOptionPane.showMessageDialog(null, "Escolha o arquivo que contem a gramatica");
