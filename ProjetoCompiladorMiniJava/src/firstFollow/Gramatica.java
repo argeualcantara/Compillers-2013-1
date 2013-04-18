@@ -17,6 +17,9 @@ public class Gramatica {
 		super();
 		BufferedReader br = null;
 		try {
+			
+			System.out.println(System.getProperties().get("os.name"));
+			
 //			JOptionPane.showMessageDialog(null, "Escolha o arquivo que contem a gramatica");
 //			JFileChooser fileChooser = new JFileChooser("");
 //			fileChooser.showOpenDialog(null);
