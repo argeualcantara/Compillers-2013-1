@@ -8,14 +8,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class Gramatica {
-	public LinkedHashMap<String, String> G = new LinkedHashMap<String, String>();
-	public HashMap<String,Boolean> TE = new HashMap<String, Boolean>();
-	public LinkedHashMap<String, NaoTerminal> NT = new LinkedHashMap<String, NaoTerminal>();
+public class Reader {
+	public static LinkedHashMap<String, String> GRAMATICA = new LinkedHashMap<String, String>();
+	public static HashMap<String,Boolean> TERMINAIS = new HashMap<String, Boolean>();
+	public static LinkedHashMap<String, NaoTerminal> NAOTERMINAIS = new LinkedHashMap<String, NaoTerminal>();
 	
 	@SuppressWarnings("resource")
-	public Gramatica(){
-		super();
+	public static void popularGramatica() {
 		BufferedReader br = null;
 		try {
 			
@@ -29,30 +28,20 @@ public class Gramatica {
 				GrammarPath = "/home/argeu/Tools/Java/workspace/ProjetoCompiladorMiniJava/src/firstFollow/gramatica.txt";
 				TerminalPath = "/home/argeu/Tools/Java/workspace/ProjetoCompiladorMiniJava/src/firstFollow/terminais.txt";
 			}
-			
-//			JOptionPane.showMessageDialog(null, "Escolha o arquivo que contem a gramatica");
-//			JFileChooser fileChooser = new JFileChooser("");
-//			fileChooser.showOpenDialog(null);
 			File file = new File(GrammarPath);
-			
 			br = new BufferedReader(new FileReader(file));
 			String read = "";
 			while((read = br.readLine()) != null){
 				String s [] = read.split("=");
-				G.put(s[0].trim(), s[1].trim());
-				NT.put(s[0].trim(), new NaoTerminal(s[0].trim()));
+				GRAMATICA.put(s[0].trim(), s[1].trim());
+				NAOTERMINAIS.put(s[0].trim(), new NaoTerminal(s[0].trim()));
 			}
-			
-//			JOptionPane.showMessageDialog(null, "Escolha o arquivo que contem os terminais");
-//			fileChooser = new JFileChooser("");
-//			fileChooser.showOpenDialog(null);
-//			file = fileChooser.getSelectedFile();
 			file = new File(TerminalPath);
 			br = new BufferedReader(new FileReader(file));
 			read = "";
 			while((read = br.readLine()) != null){
 				if(read != null && read.trim().length() > 0){
-					TE.put(read.trim(), true);
+					TERMINAIS.put(read.trim(), true);
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -64,7 +53,6 @@ public class Gramatica {
 				try {
 					br.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
