@@ -1,35 +1,30 @@
 package firstFollow;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class FirstFollow {
-	public static HashMap<String,Boolean> NT = null;
-	public static HashMap<String,Boolean> TE = null;
-	public static HashMap<String,String> G = null;
-
+	public static HashMap<String,Terminal> TE = new HashMap<String, Terminal>();
+	public static HashMap<String,String> G = new HashMap<String, String>();
+	public static HashMap<String, NaoTerminal> lista = new HashMap<String, NaoTerminal>();
 	public static void initialize(){
-		G = new HashMap<String, String>();
 		G.put("decl-seq", "decl,decl-seq'");
 		G.put("decl-seq'", ";,decl-seq|#");
 		G.put("decl", "s");
 		
-		NT = new HashMap<String, Boolean>();
-		NT.put("decl-seq", true);
-		NT.put("decl-seq'", true);
-		NT.put("decl", true);
-		
-		TE = new HashMap<String, Boolean>();
-		TE.put(";", true);
-		TE.put("s", true);
-	}
-	
-	public static void main(String[] args) {
-		HashMap<String, NaoTerminal> lista = new HashMap<String, NaoTerminal>();
 		lista.put("decl-seq", new NaoTerminal("decl-seq"));
 		lista.put("decl-seq'", new NaoTerminal("decl-seq'"));
 		lista.put("decl", new NaoTerminal("decl"));
-		NaoTerminal.Firsts(lista);
 		
+		TE.put(";", new Terminal(";"));
+		TE.put("s",  new Terminal(";"));
+	}
+	
+	public static void main(String[] args) {
+		initialize();
+		Gramatica gramatica = new Gramatica();
+		Iterator<String> ite = gramatica.NT.keySet().iterator();
+		NaoTerminal nt = gramatica.NT.get(ite.next());
+		nt.Firsts(gramatica);
 	}
 }
