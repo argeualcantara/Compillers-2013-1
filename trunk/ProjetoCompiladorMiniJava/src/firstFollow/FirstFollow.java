@@ -16,5 +16,14 @@ public class FirstFollow {
 				System.out.println(tt.getVal());
 			}
 		}
+		nt.Follows();
+		for (Iterator<String> iterator = Reader.NAOTERMINAIS.keySet().iterator(); iterator.hasNext();) {
+			String aux = iterator.next();
+			NaoTerminal naot = Reader.NAOTERMINAIS.get(aux);
+			System.out.println("Follow("+naot.val+"): ");
+			for (Terminal tt : naot.follow) {
+				System.out.println(tt.getVal());
+			}
+		}
 	}
 }
