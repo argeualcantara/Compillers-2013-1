@@ -26,15 +26,15 @@ public class Reader {
 				GrammarPath = "C:\\Users\\Argeu\\Ferramentas\\Java\\workspace\\ProjetoCompiladorMiniJava\\src\\firstFollow\\gramatica.txt";
 				TerminalPath = "C:\\Users\\Argeu\\Ferramentas\\Java\\workspace\\ProjetoCompiladorMiniJava\\src\\firstFollow\\terminais.txt";
 			}else{
-				GrammarPath = "/home/argeu/Tools/Java/workspace/ProjetoCompiladorMiniJava/src/sintatico/firstFollow/gramatica.txt";
-				TerminalPath = "/home/argeu/Tools/Java/workspace/ProjetoCompiladorMiniJava/src/sintatico/firstFollow/terminais.txt";
+				GrammarPath = "/home/argeu/Tools/Java/workspace/ProjetoCompiladorMiniJava/src/sintatico/firstFollow/gramaticaETF.txt";
+				TerminalPath = "/home/argeu/Tools/Java/workspace/ProjetoCompiladorMiniJava/src/sintatico/firstFollow/terminaisETF.txt";
 			}
 			File file = new File(GrammarPath);
 			br = new BufferedReader(new FileReader(file));
 			String read = "";
 			int i = 0;
 			while((read = br.readLine()) != null){
-				String s [] = read.split("=");
+				String s [] = read.replaceAll(" ", "").split("=");
 				if(i == 0){
 					i++;
 					SIMBOLO_INICIAL = s[0].trim();
