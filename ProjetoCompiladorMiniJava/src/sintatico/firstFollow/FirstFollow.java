@@ -47,7 +47,7 @@ public class FirstFollow {
 			}
 		}
 		
-		System.out.println("------------------------------------REGRAS------------------------------------");
+		System.out.println("------------------------------------REGRAS (TABELA)------------------------------------");
 		HashMap<String, List<Regra>> mapaRegras = new HashMap<String, List<Regra>>();
 		for (Iterator<String> iterator = Reader.GRAMATICA.keySet().iterator(); iterator.hasNext();) {
 			String aux = iterator.next();
@@ -65,8 +65,12 @@ public class FirstFollow {
 		Iterator<Entry<String, List<Regra>>> iter = mapaRegras.entrySet().iterator();
 		while (iter.hasNext()) {
 			Map.Entry<String, java.util.List<Regra>> entry = (Map.Entry<String, java.util.List<Regra>>) iter.next();
+			String old = "";
 			for(Regra r : entry.getValue()){
-				System.out.println("====================="+r.getTerminal().getVal()+"=======================");
+				if(!r.getTerminal().getVal().equals(old)){
+					System.out.println("===================== "+(r.getTerminal().getVal().equals("#")?"$":r.getTerminal().getVal())+" =======================");
+					old = r.getTerminal().getVal();
+				}
 				System.out.println(r.getNaoTerminal().getVal()+" ::= "+r.getRegra());
 			}
 			
