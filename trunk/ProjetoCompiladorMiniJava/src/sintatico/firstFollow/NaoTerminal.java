@@ -1,7 +1,9 @@
 package sintatico.firstFollow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 /**
  * 
  * @author argeu
@@ -11,6 +13,8 @@ public class NaoTerminal{
 	public String val;
 	public ArrayList<Terminal> first = new ArrayList<Terminal>();
 	public ArrayList<Terminal> follow = new ArrayList<Terminal>();
+	public HashMap<String, String> firstMap = new HashMap<String, String>();
+	public HashMap<String, String> followMap = new HashMap<String, String>();
 	
 	public NaoTerminal(String val){
 		this();
@@ -40,26 +44,55 @@ public class NaoTerminal{
 		this.follow = follow;
 	}
 	
-	public Terminal First(String valor){
+	public List<Terminal> First(String valor){
+		List<Terminal> resultado = new ArrayList<Terminal>();
 		String aux [] = valor.split(",");
 		if(Reader.TERMINAIS.containsKey(aux[0].trim())){
-			return new Terminal(aux[0]);
-		}else{
+			resultado.add(new Terminal(aux[0]));
+		}else if(aux[0].indexOf("|") < 0){
 			NaoTerminal temp = Reader.NAOTERMINAIS.get(aux[0].trim());
 			String prodTemp = Reader.GRAMATICA.get(temp.val);
 			return temp.First(prodTemp);
 		}
+		return resultado;
+		
+	}
+	
+	public List<Terminal> FirstL(String valor){
+		List<Terminal> resultado = new ArrayList<Terminal>();
+		String aux [] = valor.split(",");
+		if(Reader.TERMINAIS.containsKey(aux[0].trim())){
+			resultado.add(new Terminal(aux[0]));
+			return resultado;
+		}else{
+			NaoTerminal temp = Reader.NAOTERMINAIS.get(aux[0].trim());
+			return temp.first;
+		}
 	}
 
 	public void Firsts() {
-		for(NaoTerminal nt : Reader.NAOTERMINAIS.values()){
-			String aux [] = Reader.GRAMATICA.get(nt.val).split("\\|");
-			for (int i = 0; i < aux.length; i++) {
-				if(i==1){
-					System.out.println();
+		for (int j = 0; j < Reader.NAOTERMINAIS.values().size(); j++) {
+			for(NaoTerminal nt : Reader.NAOTERMINAIS.values()){
+				String aux [] = Reader.GRAMATICA.get(nt.val).split("\\|");
+				for (int i = 0; i < aux.length; i++) {
+					if(j == 0){
+						List<Terminal> ltt = nt.First(aux[i]);
+						for (Terminal tt : ltt) {
+							if(!nt.firstMap.containsKey(tt.getVal())){
+								nt.getFirst().add(tt);
+								nt.firstMap.put(tt.getVal(), tt.getVal());
+							}
+						}
+					}else{
+						List<Terminal> ltt = nt.FirstL(aux[i]);
+						for (Terminal tt : ltt) {
+							if(!nt.firstMap.containsKey(tt.getVal())){
+								nt.getFirst().add(tt);
+								nt.firstMap.put(tt.getVal(), tt.getVal());
+							}
+						}
+					}
 				}
-				Terminal tt = nt.First(aux[i]);
-				nt.getFirst().add(tt);
 			}
 		}
 		
@@ -68,22 +101,22 @@ public class NaoTerminal{
 	public void Follows(){
 		Regra1();
 		Regra2();
-		System.out.println("FIM REGRA 2");
 		Regra3();
 	}
 
-	private void Regra1(){
+	public void Regra1(){
 		Iterator<String> ite = Reader.NAOTERMINAIS.keySet().iterator();
 		while(ite.hasNext()){
 			NaoTerminal nt = Reader.NAOTERMINAIS.get(ite.next());
 			if(nt.val.equals(Reader.SIMBOLO_INICIAL)){
 				nt.follow.add(new Terminal("$"));
+				nt.followMap.put("$", "$");
 				break;
 			}
 		}
 	}
 	
-	private void Regra2() {
+	public void Regra2() {
 		Iterator<String> iteGra = Reader.GRAMATICA.keySet().iterator();
 		while(iteGra.hasNext()){
 			String [] prods = Reader.GRAMATICA.get(iteGra.next()).split("\\|");
@@ -99,14 +132,11 @@ public class NaoTerminal{
 							if(Reader.TERMINAIS.containsKey(prod[k].trim()) && !prod[k].trim().equals("#")){
 								if(!ntAtual.jaTiver(prod[k].trim())){
 									ntAtual.follow.add(new Terminal(prod[k].trim()));
+									ntAtual.followMap.put(prod[k].trim(), prod[k].trim());
 								}
 							}else{
 								NaoTerminal ntProx = Reader.NAOTERMINAIS.get(prod[k].trim());
-								if(ntAtual.follow.size() == 0){
-									addAllMenosVazio(ntAtual.follow, ntProx.first);
-								}else{
-									addAllNaoRepitidos(ntAtual.follow, ntProx.first);
-								}
+								addAllNaoRepitidos(ntAtual.follow, ntProx.first, ntAtual.followMap);
 								if(!contemVazio(ntProx)){
 									break;
 								}
@@ -118,7 +148,7 @@ public class NaoTerminal{
 		}
 	}
 	
-	private void Regra3(){
+	public void Regra3(){
 		Iterator<String> iteGra = Reader.GRAMATICA.keySet().iterator();
 		while(iteGra.hasNext()){
 			String prodAtual = iteGra.next();
@@ -129,43 +159,27 @@ public class NaoTerminal{
 				for (int k = prod.length-1; k > -1; k--) {
 					if(!Reader.TERMINAIS.containsKey(prod[k].trim()) && !prod[k].trim().equals("#")){
 						NaoTerminal ntProx = Reader.NAOTERMINAIS.get(prod[k].trim());
-						if(ntProx.follow.size() == 0){
-							addAllMenosVazio(ntProx.follow, ntAtual.follow);
-						}else{
-							addAllNaoRepitidos(ntProx.follow, ntAtual.follow);
+						if(!prodAtual.equals(prod[k].trim())){
+							this.addAllNaoRepitidos(ntProx.follow, ntAtual.follow, ntProx.followMap);
 						}
 						if(!contemVazio(ntProx)){
 							break;
 						}
+					}else{
+						break;
 					}
 				}
 			}
 		}
 	}
 
-	private void addAllMenosVazio(ArrayList<Terminal> adicionado, ArrayList<Terminal> adicionando) {
-		ArrayList<Terminal> temp = new ArrayList<Terminal>();
-		for (Terminal fi : adicionando) {
-			if(!fi.getVal().equals("#")){
-				temp.add(fi);
+	private void addAllNaoRepitidos(ArrayList<Terminal> adicionado, ArrayList<Terminal> adicionando, HashMap<String, String> followMap) {
+		for (Terminal inexistente : adicionando) {
+			if(!followMap.containsKey(inexistente.getVal().trim()) && !inexistente.getVal().trim().equals("#")){
+				adicionado.add(inexistente);
+				followMap.put(inexistente.getVal().trim(), inexistente.getVal().trim());
 			}
 		}
-		adicionado.addAll(temp);
-		
-	}
-
-	private void addAllNaoRepitidos(ArrayList<Terminal> adicionado, ArrayList<Terminal> adicionando) {
-		ArrayList<Terminal> temp = new ArrayList<Terminal>();
-		for (Terminal existente : adicionado) {
-			for (Terminal inexistente : adicionando) {
-				if(!existente.getVal().trim().equals(inexistente.getVal().trim()) && !inexistente.getVal().trim().equals("#")){
-					temp.add(inexistente);
-					break;
-				}
-			}
-		}
-		
-		adicionado.addAll(temp);
 	}
 
 	public boolean contemVazio(NaoTerminal nt) {
