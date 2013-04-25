@@ -34,7 +34,7 @@ public class Reader {
 			String read = "";
 			int i = 0;
 			while((read = br.readLine()) != null){
-				String s [] = read.replaceAll(" ", "").split("=");
+				String s [] = read.replaceAll(" ", "").split("::=");
 				if(i == 0){
 					i++;
 					SIMBOLO_INICIAL = s[0].trim();
